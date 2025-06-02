@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nku.canteen.mapper.DishMapper">
+    
+    <resultMap id="BaseResultMap" type="com.nku.canteen.entity.Dish">
+        <id column="dish_id" property="dishId"/>
+        <result column="name" property="name"/>
+        <result column="intro" property="intro"/>
+        <result column="price" property="price"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="stall_id" property="stallId"/>
+    </resultMap>
+    
+    <sql id="Base_Column_List">
+        dish_id, name, intro, price, image_url, stall_id
+    </sql>
+    
+    <!-- 根据档口ID查询菜品列表 -->
+    <select id="selectByStallId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM Dish
+        WHERE stall_id = #{stallId}
+        ORDER BY dish_id
+    </select>
+    
+    <!-- 通过视图根据档口ID查询菜品列表 -->
+    <resultMap id="ViewResultMap" type="com.nku.canteen.dto.StallDishViewDTO">
+        <id column="dish_id" property="dishId"/>
+        <result column="name" property="name"/>
+        <result column="intro" property="intro"/>
+        <result column="price" property="price"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="stall_id" property="stallId"/>
+        <result column="stall_name" property="stallName"/>
+        <result column="canteen_id" property="canteenId"/>
+        <result column="canteen_name" property="canteenName"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="comment_count" property="commentCount"/>
+    </resultMap>
+    
+    <select id="selectDishByStallIdFromView" resultMap="ViewResultMap">
+        SELECT *
+        FROM Stall_Dish_View
+        WHERE stall_id = #{stallId}
+        ORDER BY dish_id
+    </select>
+    
+    <!-- 根据菜品ID查询菜品信息 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM Dish
+        WHERE dish_id = #{dishId}
+    </select>
+    
+    <!-- 新增菜品 -->
+    <insert id="insert" parameterType="com.nku.canteen.entity.Dish" useGeneratedKeys="true" keyProperty="dishId">
+        INSERT INTO Dish
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="intro != null">intro,</if>
+            <if test="price != null">price,</if>
+            <if test="imageUrl != null">image_url,</if>
+            <if test="stallId != null">stall_id,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="intro != null">#{intro},</if>
+            <if test="price != null">#{price},</if>
+            <if test="imageUrl != null">#{imageUrl},</if>
+            <if test="stallId != null">#{stallId},</if>
+        </trim>
+    </insert>
+    
+    <!-- 更新菜品信息 -->
+    <update id="update" parameterType="com.nku.canteen.entity.Dish">
+        UPDATE Dish
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="intro != null">intro = #{intro},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="stallId != null">stall_id = #{stallId},</if>
+        </set>
+        WHERE dish_id = #{dishId}
+    </update>
+    
+    <!-- 删除菜品 -->
+    <delete id="deleteById">
+        DELETE FROM Dish WHERE dish_id = #{dishId}
+    </delete>
+    
+    <!-- 通过存储过程更新菜品 -->
+    <select id="updateDishByProcedure" statementType="CALLABLE">
+        {call update_dish(
+            #{dishId, mode=IN, jdbcType=INTEGER},
+            #{name, mode=IN, jdbcType=VARCHAR},
+            #{intro, mode=IN, jdbcType=VARCHAR},
+            #{price, mode=IN, jdbcType=DECIMAL},
+            #{imageUrl, mode=IN, jdbcType=VARCHAR},
+            #{stallId, mode=IN, jdbcType=INTEGER},
+            #{result, mode=OUT, jdbcType=INTEGER}
+        )}
+    </select>
+</mapper> 

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 食堂Mapper接口绑定 -->
+<mapper namespace="com.nku.canteen.mapper.CanteenMapper">
+    <!-- 数据库字段与Java实体类属性映射 -->
+    <resultMap id="BaseResultMap" type="com.nku.canteen.entity.Canteen">
+        <id column="canteen_id" property="canteenId"/>
+        <result column="name" property="name"/>
+        <result column="location" property="location"/>
+        <result column="open_time" property="openTime"/>
+        <result column="img" property="img"/>
+        <result column="campus" property="campus"/>
+    </resultMap>
+    
+    <!-- 数据库字段列表 -->
+    <sql id="Base_Column_List">
+        canteen_id, name, location, open_time, img, campus
+    </sql>
+    
+    <!-- 查询所有食堂 -->
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM Canteen
+        ORDER BY canteen_id
+    </select>
+    
+    <!-- 根据食堂ID查询食堂信息 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM Canteen
+        WHERE canteen_id = #{canteenId}
+    </select>
+    
+    <!-- 根据校区查询食堂 -->
+    <select id="selectByCampus" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM Canteen
+        WHERE campus = #{campus}
+        ORDER BY canteen_id
+    </select>
+    
+    <!-- 新增食堂 -->
+    <insert id="insert" parameterType="com.nku.canteen.entity.Canteen" useGeneratedKeys="true" keyProperty="canteenId">
+        INSERT INTO Canteen
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="location != null">location,</if>
+            <if test="openTime != null">open_time,</if>
+            <if test="img != null">img,</if>
+            <if test="campus != null">campus,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="location != null">#{location},</if>
+            <if test="openTime != null">#{openTime},</if>
+            <if test="img != null">#{img},</if>
+            <if test="campus != null">#{campus},</if>
+        </trim>
+    </insert>
+    
+    <!-- 更新食堂信息 -->
+    <update id="update" parameterType="com.nku.canteen.entity.Canteen">
+        UPDATE Canteen
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="openTime != null">open_time = #{openTime},</if>
+            <if test="img != null">img = #{img},</if>
+            <if test="campus != null">campus = #{campus},</if>
+        </set>
+        WHERE canteen_id = #{canteenId}
+    </update>
+    
+    <!-- 删除食堂 -->
+    <delete id="deleteById">
+        DELETE FROM Canteen WHERE canteen_id = #{canteenId}
+    </delete>
+</mapper> 

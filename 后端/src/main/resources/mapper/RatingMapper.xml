@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nku.canteen.mapper.RatingMapper">
+
+    <resultMap id="BaseResultMap" type="com.nku.canteen.entity.Rating">
+        <id column="rating_id" property="ratingId" />
+        <result column="user_id" property="userId" />
+        <result column="target_type" property="targetType" />
+        <result column="target_id" property="targetId" />
+        <result column="score" property="score" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        rating_id, user_id, target_type, target_id, score
+    </sql>
+
+    <!-- 根据用户ID和目标信息查找评分 -->
+    <select id="findByUserIdAndTarget" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List" />
+        FROM Rating
+        WHERE user_id = #{userId} AND target_type = #{targetType} AND target_id = #{targetId}
+    </select>
+
+    <!-- 创建新的评分记录 -->
+    <insert id="insertRating" parameterType="com.nku.canteen.entity.Rating" useGeneratedKeys="true" keyProperty="ratingId">
+        INSERT INTO Rating (user_id, target_type, target_id, score)
+        VALUES (#{userId}, #{targetType}, #{targetId}, #{score})
+    </insert>
+
+    <!-- 更新评分记录 -->
+    <update id="updateRating" parameterType="com.nku.canteen.entity.Rating">
+        UPDATE Rating
+        SET score = #{score}
+        WHERE user_id = #{userId} AND target_type = #{targetType} AND target_id = #{targetId}
+    </update>
+
+    <!-- 查询目标的平均评分 -->
+    <select id="getAverageScore" resultType="java.math.BigDecimal">
+        SELECT AVG(score)
+        FROM Rating
+        WHERE target_type = #{targetType} AND target_id = #{targetId}
+    </select>
+
+    <!-- 获取目标的所有评分记录 -->
+    <select id="getRatingsByTarget" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List" />
+        FROM Rating
+        WHERE target_type = #{targetType} AND target_id = #{targetId}
+    </select>
+
+    <!-- 获取用户的所有评分记录 -->
+    <select id="getRatingsByUserId" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List" />
+        FROM Rating
+        WHERE user_id = #{userId}
+    </select>
+
+</mapper> 

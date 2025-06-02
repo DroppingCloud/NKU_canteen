@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nku.canteen.mapper.CommentMapper">
+    
+    <resultMap id="BaseResultMap" type="com.nku.canteen.entity.Comment">
+        <id column="comment_id" property="commentId"/>
+        <result column="user_id" property="userId"/>
+        <result column="content" property="content"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+    
+    <sql id="Base_Column_List">
+        comment_id, user_id, content, create_time
+    </sql>
+    
+    <!-- 根据评论ID查询评论信息 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM Comment
+        WHERE comment_id = #{commentId}
+    </select>
+    
+    <!-- 新增评论 -->
+    <insert id="insert" parameterType="com.nku.canteen.entity.Comment" useGeneratedKeys="true" keyProperty="commentId">
+        INSERT INTO Comment (user_id, content)
+        VALUES (#{userId}, #{content})
+    </insert>
+    
+    <!-- 删除评论 -->
+    <delete id="deleteById">
+        DELETE FROM Comment WHERE comment_id = #{commentId}
+    </delete>
+    
+    <!-- 根据目标类型和目标ID查询评论列表 -->
+    <select id="selectByTarget" resultMap="BaseResultMap">
+        SELECT c.*
+        FROM Comment c
+        JOIN Comment_Target ct ON c.comment_id = ct.comment_id
+        WHERE ct.target_type = #{targetType} AND ct.target_id = #{targetId}
+        ORDER BY c.create_time DESC
+    </select>
+    
+    <!-- 根据目标类型和目标ID查询评论数量 -->
+    <select id="countByTarget" resultType="int">
+        SELECT COUNT(1)
+        FROM Comment c
+        JOIN Comment_Target ct ON c.comment_id = ct.comment_id
+        WHERE ct.target_type = #{targetType} AND ct.target_id = #{targetId}
+    </select>
+    
+    <!-- 根据目标类型和目标ID获取所有评论ID -->
+    <select id="selectCommentIdsByTarget" resultType="java.lang.Integer">
+        SELECT c.comment_id
+        FROM Comment c
+        JOIN Comment_Target ct ON c.comment_id = ct.comment_id
+        WHERE ct.target_type = #{targetType} AND ct.target_id = #{targetId}
+    </select>
+</mapper> 

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nku.canteen.mapper.LikeMapper">
+    
+    <resultMap id="BaseResultMap" type="com.nku.canteen.entity.Like">
+        <id column="like_id" property="likeId"/>
+        <result column="user_id" property="userId"/>
+    </resultMap>
+    
+    <!-- 根据点赞ID查询点赞信息 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM `Like` WHERE like_id = #{likeId}
+    </select>
+    
+    <!-- 根据用户ID和目标类型、目标ID查询点赞记录 -->
+    <select id="selectByUserAndTarget" resultMap="BaseResultMap">
+        SELECT l.*
+        FROM `Like` l
+        JOIN Like_Target lt ON l.like_id = lt.like_id
+        WHERE l.user_id = #{userId} AND lt.target_type = #{targetType} AND lt.target_id = #{targetId}
+        LIMIT 1
+    </select>
+    
+    <!-- 新增点赞记录 -->
+    <insert id="insert" parameterType="com.nku.canteen.entity.Like" useGeneratedKeys="true" keyProperty="likeId">
+        INSERT INTO `Like` (user_id)
+        VALUES (#{userId})
+    </insert>
+    
+    <!-- 删除点赞记录 -->
+    <delete id="deleteById">
+        DELETE FROM `Like` WHERE like_id = #{likeId}
+    </delete>
+    
+    <!-- 根据目标类型和目标ID查询点赞数量 -->
+    <select id="countByTarget" resultType="int">
+        SELECT COUNT(1)
+        FROM `Like` l
+        JOIN Like_Target lt ON l.like_id = lt.like_id
+        WHERE lt.target_type = #{targetType} AND lt.target_id = #{targetId}
+    </select>
+    
+    <!-- 根据目标类型和目标ID获取所有点赞ID -->
+    <select id="selectLikeIdsByTarget" resultType="java.lang.Integer">
+        SELECT l.like_id
+        FROM `Like` l
+        JOIN Like_Target lt ON l.like_id = lt.like_id
+        WHERE lt.target_type = #{targetType} AND lt.target_id = #{targetId}
+    </select>
+</mapper> 

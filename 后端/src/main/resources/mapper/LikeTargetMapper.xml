@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nku.canteen.mapper.LikeTargetMapper">
+    
+    <resultMap id="BaseResultMap" type="com.nku.canteen.entity.LikeTarget">
+        <id column="like_target_id" property="likeTargetId"/>
+        <result column="like_id" property="likeId"/>
+        <result column="target_type" property="targetType"/>
+        <result column="target_id" property="targetId"/>
+    </resultMap>
+    
+    <!-- 新增点赞目标关联 -->
+    <insert id="insert" parameterType="com.nku.canteen.entity.LikeTarget" useGeneratedKeys="true" keyProperty="likeTargetId">
+        INSERT INTO Like_Target (like_id, target_type, target_id)
+        VALUES (#{likeId}, #{targetType}, #{targetId})
+    </insert>
+    
+    <!-- 根据点赞ID删除点赞目标关联 -->
+    <delete id="deleteByLikeId">
+        DELETE FROM Like_Target WHERE like_id = #{likeId}
+    </delete>
+    
+    <!-- 根据目标类型和目标ID删除点赞目标关联 -->
+    <delete id="deleteByTarget">
+        DELETE FROM Like_Target 
+        WHERE target_type = #{targetType} AND target_id = #{targetId}
+    </delete>
+</mapper> 

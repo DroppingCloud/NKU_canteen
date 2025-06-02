@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nku.canteen.mapper.CommentTargetMapper">
+    
+    <resultMap id="BaseResultMap" type="com.nku.canteen.entity.CommentTarget">
+        <id column="comment_target_id" property="commentTargetId"/>
+        <result column="comment_id" property="commentId"/>
+        <result column="target_type" property="targetType"/>
+        <result column="target_id" property="targetId"/>
+    </resultMap>
+    
+    <!-- 新增评论目标关联 -->
+    <insert id="insert" parameterType="com.nku.canteen.entity.CommentTarget" useGeneratedKeys="true" keyProperty="commentTargetId">
+        INSERT INTO Comment_Target (comment_id, target_type, target_id)
+        VALUES (#{commentId}, #{targetType}, #{targetId})
+    </insert>
+    
+    <!-- 根据评论ID删除评论目标关联 -->
+    <delete id="deleteByCommentId">
+        DELETE FROM Comment_Target WHERE comment_id = #{commentId}
+    </delete>
+    
+    <!-- 根据目标类型和目标ID删除评论目标关联 -->
+    <delete id="deleteByTarget">
+        DELETE FROM Comment_Target 
+        WHERE target_type = #{targetType} AND target_id = #{targetId}
+    </delete>
+</mapper> 

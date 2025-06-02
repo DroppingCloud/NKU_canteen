@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nku.canteen.mapper.StallMapper">
+    
+    <resultMap id="BaseResultMap" type="com.nku.canteen.entity.Stall">
+        <id column="stall_id" property="stallId"/>
+        <result column="name" property="name"/>
+        <result column="canteen_id" property="canteenId"/>
+        <result column="floor" property="floor"/>
+        <result column="img" property="img"/>
+        <result column="intro" property="intro"/>
+    </resultMap>
+    
+    <sql id="Base_Column_List">
+        stall_id, name, canteen_id, floor, img, intro
+    </sql>
+    
+    <!-- 根据食堂ID查询档口列表 -->
+    <select id="selectByCanteenId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM Stall
+        WHERE canteen_id = #{canteenId}
+        ORDER BY stall_id
+    </select>
+    
+    <!-- 根据档口ID查询档口信息 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM Stall
+        WHERE stall_id = #{stallId}
+    </select>
+    
+    <!-- 新增档口 -->
+    <insert id="insert" parameterType="com.nku.canteen.entity.Stall" useGeneratedKeys="true" keyProperty="stallId">
+        INSERT INTO Stall
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="canteenId != null">canteen_id,</if>
+            <if test="floor != null">floor,</if>
+            <if test="img != null">img,</if>
+            <if test="intro != null">intro,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="canteenId != null">#{canteenId},</if>
+            <if test="floor != null">#{floor},</if>
+            <if test="img != null">#{img},</if>
+            <if test="intro != null">#{intro},</if>
+        </trim>
+    </insert>
+    
+    <!-- 更新档口信息 -->
+    <update id="update" parameterType="com.nku.canteen.entity.Stall">
+        UPDATE Stall
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="canteenId != null">canteen_id = #{canteenId},</if>
+            <if test="floor != null">floor = #{floor},</if>
+            <if test="img != null">img = #{img},</if>
+            <if test="intro != null">intro = #{intro},</if>
+        </set>
+        WHERE stall_id = #{stallId}
+    </update>
+    
+    <!-- 删除档口 -->
+    <delete id="deleteById">
+        DELETE FROM Stall WHERE stall_id = #{stallId}
+    </delete>
+    
+    <!-- 通过存储过程更新档口 -->
+    <select id="updateStallByProcedure" statementType="CALLABLE">
+        {call update_stall(
+            #{stallId, mode=IN, jdbcType=INTEGER},
+            #{name, mode=IN, jdbcType=VARCHAR},
+            #{canteenId, mode=IN, jdbcType=INTEGER},
+            #{floor, mode=IN, jdbcType=VARCHAR},
+            #{img, mode=IN, jdbcType=VARCHAR},
+            #{intro, mode=IN, jdbcType=VARCHAR},
+            #{result, mode=OUT, jdbcType=INTEGER}
+        )}
+    </select>
+</mapper> 
